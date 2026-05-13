@@ -1,0 +1,17 @@
+{
+  "if": {
+    "allOf": [
+      {
+        "field": "type",
+        "equals": "Microsoft.Authorization/roleAssignments"
+      },
+      {
+        "field": "Microsoft.Authorization/roleAssignments/principalType",
+        "equals": "User"
+      }
+    ]
+  },
+  "then": {
+    "effect": "Audit"
+  }
+}

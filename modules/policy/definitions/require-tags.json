@@ -1,0 +1,32 @@
+{
+  "if": {
+    "allOf": [
+      {
+        "field": "type",
+        "notIn": [
+          "Microsoft.Network/networkInterfaces",
+          "Microsoft.OperationsManagement/solutions"
+        ]
+      },
+      {
+        "anyOf": [
+          {
+            "field": "tags['environment']",
+            "exists": "false"
+          },
+          {
+            "field": "tags['project']",
+            "exists": "false"
+          },
+          {
+            "field": "tags['owner']",
+            "exists": "false"
+          }
+        ]
+      }
+    ]
+  },
+  "then": {
+    "effect": "Deny"
+  }
+}
