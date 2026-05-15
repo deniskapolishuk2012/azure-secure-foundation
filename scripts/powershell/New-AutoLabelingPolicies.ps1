@@ -23,6 +23,7 @@ New-AutoSensitivityLabelPolicy `
 New-AutoSensitivityLabelRule `
     -Name "ASF-AutoLabel-Confidential-Rule" `
     -Policy "ASF-AutoLabel-Confidential" `
+    -Workload SharePoint, OneDriveForBusiness, Exchange `
     -ContentContainsSensitiveInformation @(
         @{ Name = "Credit Card Number"; minCount = "1" }
     )
@@ -39,11 +40,11 @@ New-AutoSensitivityLabelPolicy `
 New-AutoSensitivityLabelRule `
     -Name "ASF-AutoLabel-HighlyConfidential-Rule" `
     -Policy "ASF-AutoLabel-HighlyConfidential" `
+    -Workload SharePoint, OneDriveForBusiness, Exchange `
     -ContentContainsSensitiveInformation @(
-        @{ Name = "Credit Card Number";   minCount = "1" }
+        @{ Name = "Credit Card Number"; minCount = "1" }
         @{ Name = "ASF - Israel ID Number"; minCount = "1" }
-    ) `
-    -Operator And
+    )
 
 Write-Host "Auto-labeling policies created:" -ForegroundColor Green
 Get-AutoSensitivityLabelPolicy | Where-Object { $_.Name -like "ASF-*" } | Select-Object Name, Mode, ApplySensitivityLabel

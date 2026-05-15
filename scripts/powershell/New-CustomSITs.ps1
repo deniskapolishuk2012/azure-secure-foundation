@@ -10,33 +10,55 @@ param(
 
 Connect-IPPSSession -UserPrincipalName $AdminUPN
 
-# SIT 1 — Israel ID Number (9 digits with Luhn-like checksum)
-$israelIdPattern = @"
-<Entity id="a1b2c3d4-e5f6-7890-abcd-ef1234567890" patternsProximity="300" recommendedConfidence="75">
-  <Pattern confidenceLevel="75">
-    <IdMatch idRef="Regex_israel_id" />
-    <Match idRef="Keyword_israel_id" />
-  </Pattern>
-</Entity>
+$rulePackageXml = @"
+<?xml version="1.0" encoding="utf-16"?>
+<RulePackage xmlns="http://schemas.microsoft.com/office/2011/mce">
+  <RulePack id="a1b2c3d4-e5f6-7890-abcd-ef1234567890">
+    <Version major="1" minor="0" build="0" revision="0" />
+    <Publisher id="b2c3d4e5-f6a7-8901-bcde-f12345678901" />
+    <Details defaultLangCode="en">
+      <LocalizedDetails langcode="en">
+        <PublisherName>ASF</PublisherName>
+        <Name>ASF Custom SITs</Name>
+        <Description>Custom Sensitive Information Types for Azure Secure Foundation</Description>
+      </LocalizedDetails>
+    </Details>
+  </RulePack>
+  <Rules>
+    <Entity id="c3d4e5f6-a7b8-9012-cdef-123456789012" patternsProximity="300" recommendedConfidence="75">
+      <Pattern confidenceLevel="75">
+        <IdMatch idRef="Regex_israel_id" />
+        <Any minMatches="1">
+          <Match idRef="Keyword_israel_id" />
+        </Any>
+      </Pattern>
+    </Entity>
+    <Regex id="Regex_israel_id">\b\d{9}\b</Regex>
+    <Keyword id="Keyword_israel_id">
+      <Group matchStyle="word">
+        <Term>Israel ID</Term>
+        <Term>ID number</Term>
+        <Term>identity number</Term>
+      </Group>
+    </Keyword>
+    <LocalizedStrings>
+      <Resource idRef="c3d4e5f6-a7b8-9012-cdef-123456789012">
+        <Name default="true" langcode="en-us">ASF - Israel ID Number</Name>
+        <Description default="true" langcode="en-us">Detects Israeli national ID numbers (9-digit format)</Description>
+      </Resource>
+    </LocalizedStrings>
+  </Rules>
+</RulePackage>
 "@
 
-New-DlpSensitiveInformationType `
-    -Name "ASF - Israel ID Number" `
-    -Description "Detects Israeli national ID numbers (9-digit format)" `
-    -RulePackage ([System.Text.Encoding]::Unicode.GetBytes($israelIdPattern))
+$rulePackageBytes = [System.Text.Encoding]::Unicode.GetBytes($rulePackageXml)
 
-# SIT 2 — Internal Project Code (ASF-XXXX-XXXX format)
-$projectCodeXml = @"
-<Entity id="b2c3d4e5-f6a7-8901-bcde-f12345678901" patternsProximity="300" recommendedConfidence="85">
-  <Pattern confidenceLevel="85">
-    <IdMatch idRef="Regex_project_code" />
-  </Pattern>
-</Entity>
-"@
+try {
+    New-DlpSensitiveInformationTypeRulePackage -FileData $rulePackageBytes
+    Write-Host "Custom SITs created successfully" -ForegroundColor Green
+} catch {
+    Write-Host "Error: $_" -ForegroundColor Red
+}
 
-New-DlpSensitiveInformationType `
-    -Name "ASF - Internal Project Code" `
-    -Description "Detects internal ASF project codes in format ASF-XXXX-XXXX"
-
-Write-Host "Custom SITs created:" -ForegroundColor Green
+Write-Host "`nCustom SITs in tenant:" -ForegroundColor Cyan
 Get-DlpSensitiveInformationType | Where-Object { $_.Name -like "ASF -*" } | Select-Object Name, Description

@@ -5,7 +5,7 @@ resource "azuread_conditional_access_policy" "require_mfa" {
   conditions {
     users {
       included_users = ["All"]
-      excluded_users = [var.excluded_user_id]
+      excluded_users = var.excluded_user_id != "" ? [var.excluded_user_id] : []
     }
     applications {
       included_applications = ["All"]
@@ -26,7 +26,7 @@ resource "azuread_conditional_access_policy" "block_legacy_auth" {
   conditions {
     users {
       included_users = ["All"]
-      excluded_users = [var.excluded_user_id]
+      excluded_users = var.excluded_user_id != "" ? [var.excluded_user_id] : []
     }
     applications {
       included_applications = ["All"]

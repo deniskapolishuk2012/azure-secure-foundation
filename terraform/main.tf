@@ -89,7 +89,7 @@ module "conditional_access" {
 module "monitoring" {
   source = "../modules/monitoring"
 
-  location            = var.location
+  location            = var.monitoring_location
   resource_group_name = module.governance.rg_security_name
   key_vault_id        = module.key_vault.key_vault_id
   storage_account_id  = module.storage_secure.storage_account_id

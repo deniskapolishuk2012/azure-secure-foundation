@@ -15,6 +15,11 @@ variable "location" {
   default     = "israelcentral"
 }
 
+variable "monitoring_location" {
+  description = "Region for Log Analytics workspace and Sentinel (must support Defender XDR unified portal)"
+  type        = string
+  default     = "westeurope"
+}
 variable "environment" {
   description = "Environment tag value"
   type        = string

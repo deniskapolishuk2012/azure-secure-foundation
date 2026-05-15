@@ -41,9 +41,11 @@ New-DlpCompliancePolicy `
 New-DlpComplianceRule `
     -Name "ASF-Block-HighlyConfidential-Rule" `
     -Policy "ASF-Block-HighlyConfidential-External" `
-    -ContentContainsSensitiveLabel "ASF-HighlyConfidential" `
+    -ContentContainsSensitiveInformation @{
+        Name     = "ASF - Israel ID Number"
+        minCount = "1"
+    } `
     -BlockAccess $true `
-    -BlockAccessScope PerAnonymousLink `
     -NotifyUser Owner
 
 Write-Host "DLP policies created successfully" -ForegroundColor Green
